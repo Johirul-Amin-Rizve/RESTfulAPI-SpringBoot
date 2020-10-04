@@ -31,6 +31,15 @@ public class UserResource {
         return userDaoService.findAll();
     }
 
+    @DeleteMapping("/users/{id}")
+    public User delete(@PathVariable int id){
+        User user = userDaoService.deleteById(id);
+        if(user == null){
+            throw new NotFoundException("id-"+ id);
+        }
+        return user;
+    }
+
     @GetMapping("/users/{id}")
     public User getById(@PathVariable int id){
         User user = userDaoService.findOne(id);
