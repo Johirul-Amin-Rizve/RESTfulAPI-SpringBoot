@@ -2,8 +2,10 @@ package com.example.RESTfulAPISpringBoot.Controller;
 import com.example.RESTfulAPISpringBoot.Exception.NotFoundException;
 import com.example.RESTfulAPISpringBoot.Service.UserDaoService;
 import  com.example.RESTfulAPISpringBoot.domain.User;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -42,11 +44,13 @@ public class UserResource {
     }
 
     @GetMapping("/users/{id}")
-    public User getById(@PathVariable int id){
+    public EntityModel<User> getById(@PathVariable int id){
         User user = userDaoService.findOne(id);
         if(user == null){
             throw new NotFoundException("id-"+ id);
         }
-        return user;
+        return EntityModel.of(user,
+                linkTo(methodOn(UserResource.class).getById(id)).withSelfRel(),
+                linkTo(methodOn(UserResource.class).getAll()).withRel("users"));
     }
 }
